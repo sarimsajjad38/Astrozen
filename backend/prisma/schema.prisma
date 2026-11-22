@@ -1,0 +1,115 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    String           @id @default(uuid())
+  supabaseAuthId        String?          @unique
+  email                 String?
+  phone                 String?
+  displayName           String?          @default("Cosmic Seeker")
+  zodiacSign            String?          @default("Scorpio")
+  walletMinutes         Int              @default(5)
+  walletCoins           Decimal          @default(0.0) @db.Decimal(10, 2)
+  isSubscribed          Boolean          @default(false)
+  subscriptionTier      String?          @default("Free")
+  subscriptionExpiresAt DateTime?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  kundliProfiles        KundliProfile[]
+  palmReadings          PalmReading[]
+  consultations         Consultation[]
+  iapPurchases          IapPurchase[]
+  walletLedger          WalletLedger[]
+
+  @@map("users")
+}
+
+model KundliProfile {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personName     String
+  relationship   String    @default("Self")
+  dob            String    // DD/MM/YYYY
+  tob            String    // HH:MM
+  pob            String    // City, Country
+  latitude       Decimal   @default(28.6139) @db.Decimal(9, 6)
+  longitude      Decimal   @default(77.2090) @db.Decimal(9, 6)
+  timezoneOffset Decimal   @default(5.5) @db.Decimal(4, 2)
+  rashi          String
+  lagna          String
+  nakshatra      String
+  chartData      Json
+  createdAt      DateTime  @default(now())
+
+  @@map("kundli_profiles")
+}
+
+model PalmReading {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageUrl       String?
+  step1Text      Json
+  step2Chart     Json
+  createdAt      DateTime  @default(now())
+
+  @@map("palm_readings")
+}
+
+model Consultation {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  expertId        String
+  expertName      String
+  type            String    @default("chat") // "chat" | "audio_call"
+  status          String    @default("completed") // "active" | "completed" | "cancelled"
+  durationSeconds Int       @default(0)
+  ratePerMinute   Decimal   @default(20.0) @db.Decimal(8, 2)
+  totalCost       Decimal   @default(0.0) @db.Decimal(8, 2)
+  chatMessages    Json?
+  startedAt       DateTime  @default(now())
+  endedAt         DateTime?
+
+  @@map("consultations")
+}
+
+model IapPurchase {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  packageName    String    @default("com.example.astrozen")
+  productId      String
+  purchaseToken  String    @unique
+  orderId        String?
+  purchaseTime   DateTime  @default(now())
+  purchaseState  Int       @default(0) // 0: Purchased, 1: Canceled, 2: Pending
+  isAcknowledged Boolean   @default(false)
+  verifiedAt     DateTime  @default(now())
+
+  @@map("iap_purchases")
+}
+
+model WalletLedger {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  deltaCoins   Decimal  @default(0.0) @db.Decimal(10, 2)
+  deltaMinutes Int      @default(0)
+  balanceAfter Decimal  @default(0.0) @db.Decimal(10, 2)
+  actionType   String   // "IAP_RECHARGE" | "CONSULTATION_DEBIT" | "SIGNUP_BONUS"
+  referenceId  String?
+  description  String
+  createdAt    DateTime @default(now())
+
+  @@map("wallet_ledger")
+}
