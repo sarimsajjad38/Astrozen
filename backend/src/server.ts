@@ -12,6 +12,7 @@ import { ConsultationSocketHub } from './modules/consultations/consultation.sock
 
 export async function buildServer() {
   const server = Fastify({
+    bodyLimit: 30 * 1024 * 1024, // 30 MB payload limit for high-resolution palm photos
     logger: {
       level: 'info',
       transport: {
@@ -27,7 +28,15 @@ export async function buildServer() {
   await server.register(websocket);
   await server.register(authPlugin);
 
-  // ── Health Check ────────────────────────────────────────────────────────────
+  // ── Root & Health Check ─────────────────────────────────────────────────────
+  server.get('/', async () => ({
+    service: 'AstroZen Backend API',
+    version: '1.0.0',
+    status: 'online',
+    documentation: '/docs',
+    timestamp: new Date().toISOString(),
+  }));
+
   server.get('/health', async () => ({
     status: 'ok',
     service: 'AstroZen Backend API',

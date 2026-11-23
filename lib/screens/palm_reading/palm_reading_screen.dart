@@ -67,7 +67,12 @@ class _PalmReadingScreenState extends State<PalmReadingScreen>
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final img = await picker.pickImage(source: source, imageQuality: 85);
+    final img = await picker.pickImage(
+      source: source,
+      maxWidth: 1080,
+      maxHeight: 1920,
+      imageQuality: 80,
+    );
     if (img != null) {
       setState(() => _palmImage = File(img.path));
     }

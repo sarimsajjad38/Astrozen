@@ -10,11 +10,12 @@ class AstrozenApiService {
   // - 10.0.2.2 for Android Emulator
   // - 127.0.0.1 for Desktop/iOS Simulator
   // - Or custom LAN IP for physical device
-  static const String _defaultBaseUrl = 'http://10.0.2.2:4000';
-
   static Future<String> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('api_base_url') ?? _defaultBaseUrl;
+    final custom = prefs.getString('api_base_url');
+    if (custom != null && custom.isNotEmpty) return custom;
+    // When using adb reverse or local desktop, 127.0.0.1 is universal
+    return 'http://127.0.0.1:4000';
   }
 
   static Future<void> setBaseUrl(String url) async {
