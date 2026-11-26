@@ -347,6 +347,91 @@ class _HomeTab extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
+              // ── Horoscope Registration Prompt Banner (if not completed) ──
+              Consumer<AuthProvider>(
+                builder: (context, auth, _) {
+                  if (auth.hasCompletedHoroscopeProfile) {
+                    return const SizedBox.shrink();
+                  }
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppTheme.royalPurple, AppTheme.deepPurple],
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AppTheme.starGold.withValues(alpha: 0.5),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.starGold.withValues(alpha: 0.2),
+                          ),
+                          child: const Icon(
+                            Icons.auto_awesome_rounded,
+                            color: AppTheme.starGold,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Personalize Your Horoscope',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Add DOB, time & city for 100% accurate Gemini daily predictions',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.starGold,
+                            foregroundColor: AppTheme.deepSpace,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () => context.push('/horoscope-registration'),
+                          child: Text(
+                            'Complete',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
               // ── Today's Cosmic Overview ──────────────────────────
               _SectionTitle(
                 title: "Today's Cosmic Energy",

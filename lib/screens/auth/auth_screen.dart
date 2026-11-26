@@ -64,12 +64,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
-    await context.read<AuthProvider>().login(
+    final auth = context.read<AuthProvider>();
+    await auth.login(
       _phoneController.text,
       _nameController.text.isEmpty ? 'Cosmic Seeker' : _nameController.text,
     );
     if (!mounted) return;
-    context.go('/home');
+    if (auth.hasCompletedHoroscopeProfile) {
+      context.go('/home');
+    } else {
+      context.go('/horoscope-registration');
+    }
   }
 
   @override

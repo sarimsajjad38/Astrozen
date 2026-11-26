@@ -405,6 +405,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 18),
 
+                      // ── Horoscope Birth Chart Details Card ───────────────
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBg,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppTheme.starGold.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.royalPurple.withValues(alpha: 0.3),
+                              ),
+                              child: const Icon(
+                                Icons.auto_awesome_rounded,
+                                color: AppTheme.starGold,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Horoscope Birth Chart',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    auth.userDob != null &&
+                                            auth.userDob!.isNotEmpty
+                                        ? '${auth.userDob} • ${auth.userTob ?? "12:00 PM"} • ${auth.userPob ?? "India"}'
+                                        : 'Set DOB, Time & City for 100% precision',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 11,
+                                      color: AppTheme.textMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.starGold,
+                                foregroundColor: AppTheme.deepSpace,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () => context.push(
+                                '/horoscope-registration',
+                                extra: true,
+                              ),
+                              child: Text(
+                                auth.userDob != null ? 'Edit' : 'Register',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
                       // ── Astrologer Consultation Wallet Card ──────
                       Container(
                         padding: const EdgeInsets.all(16),

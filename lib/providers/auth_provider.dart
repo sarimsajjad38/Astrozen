@@ -8,6 +8,12 @@ class AuthProvider extends ChangeNotifier {
   String? _userName;
   String? _userPhone;
   String? _userZodiac;
+  String? _userDob;
+  String? _userTob;
+  String? _userPob;
+  String? _userGender;
+  String? _userNakshatra;
+  bool _hasCompletedHoroscopeProfile = false;
   int _walletMinutes = 5;
   bool _isSubscribed = false;
   String? _subscriptionTier;
@@ -18,6 +24,12 @@ class AuthProvider extends ChangeNotifier {
   String? get userName => _userName;
   String? get userPhone => _userPhone;
   String? get userZodiac => _userZodiac;
+  String? get userDob => _userDob;
+  String? get userTob => _userTob;
+  String? get userPob => _userPob;
+  String? get userGender => _userGender;
+  String? get userNakshatra => _userNakshatra;
+  bool get hasCompletedHoroscopeProfile => _hasCompletedHoroscopeProfile;
   int get walletMinutes => _walletMinutes;
   bool get isSubscribed => _isSubscribed;
   String? get subscriptionTier => _subscriptionTier;
@@ -30,9 +42,29 @@ class AuthProvider extends ChangeNotifier {
     _userName = prefs.getString('userName');
     _userPhone = prefs.getString('userPhone');
     _userZodiac = prefs.getString('userZodiac');
+    _userDob = prefs.getString('userDob');
+    _userTob = prefs.getString('userTob');
+    _userPob = prefs.getString('userPob');
+    _userGender = prefs.getString('userGender');
+    _userNakshatra = prefs.getString('userNakshatra');
+    _hasCompletedHoroscopeProfile =
+        prefs.getBool('hasCompletedHoroscopeProfile') ??
+            (_userDob != null && _userDob!.isNotEmpty);
     _walletMinutes = prefs.getInt('walletMinutes') ?? 5;
     _isSubscribed = prefs.getBool('isSubscribed') ?? false;
     _subscriptionTier = prefs.getString('subscriptionTier') ?? 'Free';
+
+    if (_userDob != null) {
+      _userBirthDetails = {
+        'name': _userName,
+        'dob': _userDob,
+        'tob': _userTob,
+        'pob': _userPob,
+        'gender': _userGender,
+        'zodiac': _userZodiac,
+        'nakshatra': _userNakshatra,
+      };
+    }
 
     notifyListeners();
 
@@ -138,6 +170,56 @@ class AuthProvider extends ChangeNotifier {
     } catch (_) {}
   }
 
+  Future<void> saveHoroscopeProfile({
+    required String name,
+    required String dob,
+    required String tob,
+    required String pob,
+    required String gender,
+    required String zodiac,
+    String? nakshatra,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    _userName = name.trim();
+    _userDob = dob.trim();
+    _userTob = tob.trim();
+    _userPob = pob.trim();
+    _userGender = gender.trim();
+    _userZodiac = zodiac.trim();
+    _userNakshatra = nakshatra?.trim();
+    _hasCompletedHoroscopeProfile = true;
+
+    await prefs.setString('userName', _userName!);
+    await prefs.setString('userDob', _userDob!);
+    await prefs.setString('userTob', _userTob!);
+    await prefs.setString('userPob', _userPob!);
+    await prefs.setString('userGender', _userGender!);
+    await prefs.setString('userZodiac', _userZodiac!);
+    if (_userNakshatra != null) {
+      await prefs.setString('userNakshatra', _userNakshatra!);
+    }
+    await prefs.setBool('hasCompletedHoroscopeProfile', true);
+
+    _userBirthDetails = {
+      'name': _userName,
+      'dob': _userDob,
+      'tob': _userTob,
+      'pob': _userPob,
+      'gender': _userGender,
+      'zodiac': _userZodiac,
+      'nakshatra': _userNakshatra,
+    };
+
+    notifyListeners();
+
+    try {
+      await AstrozenApiService.updateUserProfile(
+        displayName: _userName,
+        zodiacSign: _userZodiac,
+      );
+    } catch (_) {}
+  }
+
   Future<void> creditSubscription(int minutes, String tier) async {
     _walletMinutes += minutes;
     _isSubscribed = true;
@@ -157,6 +239,12 @@ class AuthProvider extends ChangeNotifier {
     _userName = null;
     _userPhone = null;
     _userZodiac = null;
+    _userDob = null;
+    _userTob = null;
+    _userPob = null;
+    _userGender = null;
+    _userNakshatra = null;
+    _hasCompletedHoroscopeProfile = false;
     _walletMinutes = 5;
     _isSubscribed = false;
     _subscriptionTier = 'Free';

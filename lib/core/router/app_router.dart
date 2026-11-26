@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../../screens/splash/splash_screen.dart';
 import '../../screens/onboarding/onboarding_screen.dart';
 import '../../screens/auth/auth_screen.dart';
+import '../../screens/auth/horoscope_registration_screen.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/profile/profile_screen.dart';
 import '../../screens/horoscope/horoscope_screen.dart';
@@ -25,6 +26,13 @@ class AppRouter {
       GoRoute(path: '/splash',       builder: (context, state) => const SplashScreen()),
       GoRoute(path: '/onboarding',   builder: (context, state) => const OnboardingScreen()),
       GoRoute(path: '/auth',         builder: (context, state) => const AuthScreen()),
+      GoRoute(
+        path: '/horoscope-registration',
+        builder: (context, state) {
+          final isEdit = state.extra as bool? ?? false;
+          return HoroscopeRegistrationScreen(isEdit: isEdit);
+        },
+      ),
       GoRoute(path: '/home',         builder: (context, state) => const HomeScreen()),
       GoRoute(path: '/profile',      builder: (context, state) => const ProfileScreen()),
       GoRoute(path: '/horoscope',    builder: (context, state) => const HoroscopeScreen()),
