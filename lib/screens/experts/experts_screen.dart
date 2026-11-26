@@ -243,42 +243,84 @@ class _ExpertsScreenState extends State<ExpertsScreen> {
                                   children: [
                                     Row(
                                       children: [
-                                        Text(
-                                          e['name'] as String,
-                                          style: GoogleFonts.outfit(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppTheme.textPrimary,
+                                        Flexible(
+                                          child: Text(
+                                            e['name'] as String,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              color: AppTheme.textPrimary,
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(width: 4),
-                                        const Icon(Icons.verified, color: AppTheme.celestialTeal, size: 14),
+                                        const Icon(
+                                          Icons.verified,
+                                          color: AppTheme.celestialTeal,
+                                          size: 14,
+                                        ),
                                       ],
                                     ),
                                     Text(
                                       e['spec'] as String,
-                                      style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.starGold),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        color: AppTheme.starGold,
+                                      ),
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
                                       (e['languages'] as List).join(', '),
-                                      style: GoogleFonts.outfit(fontSize: 11, color: AppTheme.textMuted),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 11,
+                                        color: AppTheme.textMuted,
+                                      ),
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                        const Icon(Icons.star_rounded, color: AppTheme.starGold, size: 14),
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          color: AppTheme.starGold,
+                                          size: 14,
+                                        ),
                                         const SizedBox(width: 3),
-                                        Text('${e['rating']}', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                                        Text(
+                                          '${e['rating']}',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.textPrimary,
+                                          ),
+                                        ),
                                         const SizedBox(width: 8),
-                                        Text('(${e['reviews']})', style: GoogleFonts.outfit(fontSize: 11, color: AppTheme.textMuted)),
+                                        Text(
+                                          '(${e['reviews']})',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 11,
+                                            color: AppTheme.textMuted,
+                                          ),
+                                        ),
                                         const SizedBox(width: 8),
-                                        Text('• ${e['exp']}', style: GoogleFonts.outfit(fontSize: 11, color: AppTheme.textMuted)),
+                                        Text(
+                                          '• ${e['exp']}',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 11,
+                                            color: AppTheme.textMuted,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
+                              const SizedBox(width: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
