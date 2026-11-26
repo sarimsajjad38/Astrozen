@@ -196,22 +196,29 @@ class ExpertProfileScreen extends StatelessWidget {
                       child: const Icon(Icons.arrow_back_ios_new, size: 16, color: AppTheme.textPrimary),
                     ),
                   ),
-                  expandedHeight: 200,
+                  expandedHeight: 230,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
                       alignment: Alignment.center,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SizedBox(height: 36),
+                          const SizedBox(height: 20),
                           Container(
                             width: 72,
                             height: 72,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppTheme.royalPurple.withValues(alpha: 0.3),
-                              border: Border.all(color: AppTheme.starGold, width: 1.5),
+                              border: Border.all(
+                                color: AppTheme.starGold,
+                                width: 1.5,
+                              ),
                             ),
                             child: Center(
                               child: Icon(
@@ -221,7 +228,7 @@ class ExpertProfileScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -234,12 +241,20 @@ class ExpertProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.verified, color: AppTheme.celestialTeal, size: 16),
+                              const Icon(
+                                Icons.verified,
+                                color: AppTheme.celestialTeal,
+                                size: 16,
+                              ),
                             ],
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             expert['spec'] as String,
-                            style: GoogleFonts.outfit(fontSize: 13, color: AppTheme.starGold),
+                            style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              color: AppTheme.starGold,
+                            ),
                           ),
                         ],
                       ),
