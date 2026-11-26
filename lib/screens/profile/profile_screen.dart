@@ -600,7 +600,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   value: notif.dailyHoroscopeAlert,
-                                  activeThumbColor: AppTheme.starGold,
+                                  activeColor: AppTheme.starGold,
                                   onChanged: (val) =>
                                       notif.updateSettings(dailyHoroscope: val),
                                 ),
@@ -625,7 +625,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   value: notif.rahuKaalAlert,
-                                  activeThumbColor: AppTheme.starGold,
+                                  activeColor: AppTheme.starGold,
                                   onChanged: (val) =>
                                       notif.updateSettings(rahuKaal: val),
                                 ),
