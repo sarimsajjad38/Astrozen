@@ -4,6 +4,7 @@ import corsPlugin from './plugins/cors.plugin.js';
 import swaggerPlugin from './plugins/swagger.plugin.js';
 import authPlugin from './plugins/auth.plugin.js';
 import { AuthService } from './modules/auth/auth.service.js';
+import { NotificationService } from './modules/notifications/notification.service.js';
 import { VedicAstronomyEngine } from './modules/astrology/ephemeris.engine.js';
 import { AiAstrologyService } from './modules/ai/ai.service.js';
 import { GooglePlayValidator } from './modules/iap/google-play.validator.js';
@@ -105,6 +106,87 @@ export async function buildServer() {
       zodiacSign: body.zodiacSign,
     });
     return reply.send({ success: true, user: updated });
+  });
+
+  // ── Push Notifications & Scheduled Alerts ────────────────────────────────────
+  server.post('/api/v1/notifications/fcm-token', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const body = (req.body as any) || {};
+    if (!body.fcmToken) {
+      return reply.status(400).send({ error: 'fcmToken is required' });
+    }
+    const user = await NotificationService.registerFcmToken(userId, body.fcmToken);
+    return reply.send({ success: true, message: 'FCM token registered', fcmToken: user.fcmToken });
+  });
+
+  server.get('/api/v1/notifications', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const notifications = await NotificationService.getUserNotifications(userId);
+    return reply.send({ success: true, count: notifications.length, data: notifications });
+  });
+
+  server.patch('/api/v1/notifications/:id/read', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const { id } = req.params as { id: string };
+    await NotificationService.markAsRead(userId, id);
+    return reply.send({ success: true, message: 'Notification marked as read' });
+  });
+
+  server.put('/api/v1/notifications/settings', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const body = (req.body as any) || {};
+    const updated = await NotificationService.updateSettings(userId, {
+      notificationsEnabled: body.notificationsEnabled,
+      dailyHoroscopeAlert: body.dailyHoroscopeAlert,
+      rahuKaalAlert: body.rahuKaalAlert,
+    });
+    return reply.send({ success: true, settings: {
+      notificationsEnabled: updated.notificationsEnabled,
+      dailyHoroscopeAlert: updated.dailyHoroscopeAlert,
+      rahuKaalAlert: updated.rahuKaalAlert,
+    } });
+  });
+
+  server.post('/api/v1/notifications/test-horoscope', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const result = await NotificationService.generateUserDailyHoroscope(userId);
+    return reply.send({ success: true, data: result?.notification, horoscope: result?.horoscope });
+  });
+
+  server.post('/api/v1/notifications/daily-horoscope/generate-my-daily', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const result = await NotificationService.generateUserDailyHoroscope(userId);
+    if (!result) {
+      return reply.status(404).send({ error: 'User not found' });
+    }
+    return reply.send({ success: true, notification: result.notification, horoscope: result.horoscope });
+  });
+
+  server.post('/api/v1/notifications/daily-horoscope/trigger', async (req, reply) => {
+    const count = await NotificationService.triggerDailyHoroscopeBroadcast();
+    return reply.send({ success: true, broadcastCount: count, message: `Dispatched daily Gemini horoscope to ${count} seekers` });
+  });
+
+  server.get('/api/v1/horoscope/gemini-daily', async (req, reply) => {
+    const query = (req.query as any) || {};
+    const sign = query.sign || 'Scorpio';
+    const date = query.date;
+    const horoscope = await AiAstrologyService.generateDailyHoroscope({
+      zodiacSign: sign,
+      date,
+    });
+    return reply.send({ success: true, data: horoscope });
+  });
+
+  server.post('/api/v1/notifications/test-rahu-kaal', { preHandler: [server.authenticate] }, async (req, reply) => {
+    const { userId } = req.user;
+    const notification = await NotificationService.sendToUser(userId, {
+      title: '⚠️ Rahu Kaal Notice Today (4:30 PM - 6:00 PM)',
+      body: 'Auspicious tasks and major investments are best paused during Rahu Kaal. Recite Gayatri Mantra.',
+      type: 'RAHU_KAAL',
+      data: { window: '4:30 PM - 6:00 PM' },
+    });
+    return reply.send({ success: true, data: notification });
   });
 
   // ── Astrology Endpoints ─────────────────────────────────────────────────────

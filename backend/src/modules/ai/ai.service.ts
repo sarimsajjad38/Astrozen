@@ -24,6 +24,22 @@ export interface RoyalPalmReadingResponse {
   hinglishReading: string;
 }
 
+export interface DailyHoroscopeResult {
+  sign: string;
+  date: string;
+  title: string;
+  notificationSnippet: string;
+  overview: string;
+  careerFinance: string;
+  loveRelationship: string;
+  healthWellness: string;
+  luckyColor: string;
+  luckyNumber: string;
+  luckyTime: string;
+  luckyGemstone: string;
+  cosmicMantra: string;
+}
+
 export class AiAstrologyService {
   private static readonly SYSTEM_PROMPT = `
 You are an expert Vedic astrologer and palmist. This is for fun and entertainment.
@@ -113,6 +129,225 @@ Keep your answers uplifting, wise, and grounded in Vedic principles. Do not pred
 
     // Contextual fallback response in Hinglish
     return this.synthesizeAstrologerReply(params.message, params.expertName);
+  }
+
+  /**
+   * Generates a personalized daily horoscope notification and forecast via Gemini API.
+   */
+  public static async generateDailyHoroscope(params: {
+    zodiacSign: string;
+    name?: string;
+    date?: string;
+  }): Promise<DailyHoroscopeResult> {
+    const apiKey = env.GEMINI_API_KEY;
+    const sign = params.zodiacSign || 'Scorpio';
+    const dateStr = params.date || new Date().toISOString().split('T')[0];
+    const seekerName = params.name || 'Cosmic Seeker';
+
+    if (apiKey && apiKey.trim().length > 0) {
+      const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+      for (const model of models) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+          const prompt = `
+You are an expert Vedic Astrologer providing a daily celestial forecast and notification for a seeker.
+TODAY'S DATE: ${dateStr}
+SEEKER NAME: ${seekerName}
+ZODIAC SIGN / RASHI: ${sign}
+
+Generate an inspiring, empowering, and positive daily Vedic horoscope forecast in Hinglish.
+RULES:
+1. Do not predict accidents, illness, or death. Focus on spiritual growth, productivity, love, and auspicious timings.
+2. Return strictly valid JSON with no markdown wrapping or extra text.
+
+JSON Schema:
+{
+  "sign": "${sign}",
+  "date": "${dateStr}",
+  "title": "Inspiring notification title (e.g. ✨ ${sign} Rashi: Surya & Guru Ka Shubh Sanyog)",
+  "notificationSnippet": "Punchy 1-2 line alert for mobile push notification (max 120 chars, e.g. Aaj career me nayi shuruwat ka shubh yog hai. Shubh rang: Peela.)",
+  "overview": "3-4 sentences of warm, encouraging Hinglish daily prediction overview.",
+  "careerFinance": "2-3 sentences regarding career opportunities, wealth accumulation, and workplace success.",
+  "loveRelationship": "2 sentences regarding family, friendships, and romantic harmony.",
+  "healthWellness": "2 sentences on energy, peace of mind, and sattvic habits.",
+  "luckyColor": "Color name in Hinglish & English (e.g. Sunehra Peela / Golden Yellow)",
+  "luckyNumber": "Lucky number (e.g. 7)",
+  "luckyTime": "Auspicious time window (e.g. 10:15 AM - 12:30 PM)",
+  "luckyGemstone": "Gemstone (e.g. Pukhraj / Yellow Sapphire)",
+  "cosmicMantra": "Vedic mantra (e.g. Om Namo Bhagavate Vasudevaya)"
+}
+`;
+
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.7,
+                responseMimeType: 'application/json',
+              },
+            }),
+          });
+
+          if (response.ok) {
+            const data = (await response.json()) as any;
+            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) {
+              const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+              const parsed = JSON.parse(cleanJson);
+              if (parsed.title && parsed.notificationSnippet) {
+                return parsed as DailyHoroscopeResult;
+              }
+            }
+          }
+        } catch (err) {
+          console.warn(`Gemini daily horoscope attempt failed with ${model}:`, err);
+        }
+      }
+    }
+
+    // High quality deterministic Vedic synthesis fallback
+    return this.synthesizeDailyHoroscope(sign, dateStr);
+  }
+
+  public static synthesizeDailyHoroscope(sign: string, dateStr: string): DailyHoroscopeResult {
+    const signProfiles: Record<string, {
+      rashi: string;
+      color: string;
+      num: string;
+      time: string;
+      gem: string;
+      mantra: string;
+      highlight: string;
+    }> = {
+      Aries: {
+        rashi: 'Mesh (Aries)',
+        color: 'Laal & Sunehra (Crimson & Gold)',
+        num: '9',
+        time: '08:30 AM - 10:00 AM',
+        gem: 'Moonga (Red Coral)',
+        mantra: 'Om Kram Kreem Kroum Sah Bhaumaya Namaha',
+        highlight: 'Mangal ka prabhav aapko unchi urja aur dharana shakti dega. Naye projects shuru karne ka uttam samay.',
+      },
+      Taurus: {
+        rashi: 'Vrishabh (Taurus)',
+        color: 'Shubhra Safed & Halka Gulabi (White & Soft Pink)',
+        num: '6',
+        time: '11:00 AM - 12:30 PM',
+        gem: 'Heera / Opal (Diamond)',
+        mantra: 'Om Dram Dreem Droum Sah Shukraya Namaha',
+        highlight: 'Shukra ki kripa se dhan aagman aur parivarik sauhard bana rahega. Kala aur saundarya me ruchi badhegi.',
+      },
+      Gemini: {
+        rashi: 'Mithun (Gemini)',
+        color: 'Panna Hara (Emerald Green)',
+        num: '5',
+        time: '09:15 AM - 10:45 AM',
+        gem: 'Panna (Emerald)',
+        mantra: 'Om Bram Breem Broum Sah Budhaya Namaha',
+        highlight: 'Budh ki sthiti vaani aur vyapar me adbhut safalta dilayegi. Meetings aur communication me labh hoga.',
+      },
+      Cancer: {
+        rashi: 'Kark (Cancer)',
+        color: 'Chandi Safed & Moti (Pearl White)',
+        num: '2',
+        time: '07:00 AM - 08:30 AM',
+        gem: 'Moti (Natural Pearl)',
+        mantra: 'Om Shram Shreem Shroum Sah Chandraya Namaha',
+        highlight: 'Chandra dev man ko shanti aur teekhi aatmik drishti pradan karenge. Parivar ke saath anandmay samay beetega.',
+      },
+      Leo: {
+        rashi: 'Simha (Leo)',
+        color: 'Kesar & Sunehra (Saffron & Royal Gold)',
+        num: '1',
+        time: '12:00 PM - 01:30 PM',
+        gem: 'Manikya (Ruby)',
+        mantra: 'Om Hram Hreem Hroum Sah Suryaya Namaha',
+        highlight: 'Surya dev ka aashirwad aapke tejas aur leadership ko chamkayega. Samaj me aadar samman me vriddhi hogi.',
+      },
+      Virgo: {
+        rashi: 'Kanya (Virgo)',
+        color: 'Pistachio Hara & Pila (Green & Light Yellow)',
+        num: '5',
+        time: '02:00 PM - 03:30 PM',
+        gem: 'Panna (Emerald)',
+        mantra: 'Om Budhaya Namaha',
+        highlight: 'Karyakshetra me analytical sooch aur parishram shreshtha parinam layenge. Vittiya santulan behtar rahega.',
+      },
+      Libra: {
+        rashi: 'Tula (Libra)',
+        color: 'Aakaashi Neela & Chamkila Safed (Sky Blue & White)',
+        num: '6',
+        time: '04:00 PM - 05:30 PM',
+        gem: 'Opal / Diamond',
+        mantra: 'Om Shukraya Namaha',
+        highlight: 'Samanway aur santulan aapki sabse badi taaqat rahegi. Saajhedari ke karyon me atyadhik labh ke yog hain.',
+      },
+      Scorpio: {
+        rashi: 'Vrishchik (Scorpio)',
+        color: 'Gehra Laal & Sinduri (Deep Maroon & Crimson)',
+        num: '8',
+        time: '10:00 AM - 11:30 AM',
+        gem: 'Moonga (Red Coral)',
+        mantra: 'Om Angarkaya Namaha',
+        highlight: 'Aapki aantarik shakti aur strategic vision mushkil chunautiyon ko aasan bana degi. Dasha anukool hai.',
+      },
+      Sagittarius: {
+        rashi: 'Dhanu (Sagittarius)',
+        color: 'Pila & Narangi (Bright Yellow & Orange)',
+        num: '3',
+        time: '09:00 AM - 10:30 AM',
+        gem: 'Pukhraj (Yellow Sapphire)',
+        mantra: 'Om Gram Greem Groum Sah Guruve Namaha',
+        highlight: 'Brihaspati ki drishti se gyan, adhyatma aur bhagya ka purna sahyog milega. Lambi yatra ya shiksha me labh.',
+      },
+      Capricorn: {
+        rashi: 'Makar (Capricorn)',
+        color: 'Neelam Neela & Gray (Navy Blue & Charcoal)',
+        num: '4',
+        time: '03:30 PM - 05:00 PM',
+        gem: 'Neelam (Blue Sapphire)',
+        mantra: 'Om Sham Shanaicharaya Namaha',
+        highlight: 'Shani dev aapke dhairya aur anushasan ka shubh phal denge. Lambe samay ke lakshya shighra nikat aayenge.',
+      },
+      Aquarius: {
+        rashi: 'Kumbh (Aquarius)',
+        color: 'Firoza & Electric Blue (Turquoise & Blue)',
+        num: '8',
+        time: '01:30 PM - 03:00 PM',
+        gem: 'Neelam / Amethyst',
+        mantra: 'Om Shanaicharaya Namaha',
+        highlight: 'Naye vichar aur innovative drishtikon se badi kamyabi milegi. Mitron aur sangathan ka sahyog prapt hoga.',
+      },
+      Pisces: {
+        rashi: 'Meen (Pisces)',
+        color: 'Haldi Pila & Samundri Hara (Turmeric Yellow & Sea Green)',
+        num: '7',
+        time: '07:30 AM - 09:00 AM',
+        gem: 'Pukhraj (Yellow Sapphire)',
+        mantra: 'Om Brihaspataye Namaha',
+        highlight: 'Intuition aur empathy charam par hogi. Spiritual kriyaon aur parivarik sukh me anandmay vriddhi hogi.',
+      },
+    };
+
+    const s = signProfiles[sign] || signProfiles['Scorpio'];
+
+    return {
+      sign,
+      date: dateStr,
+      title: `✨ ${s.rashi} Dainik Kundli Bhavishya`,
+      notificationSnippet: `${s.highlight.substring(0, 85)}... Shubh Rang: ${s.color.split(' ')[0]}.`,
+      overview: `Aaj ke din grahon ki dasha ${s.rashi} ke jaatakon ke liye anukool aur urja-dayak hai. ${s.highlight} Apne aatmavishwas ko banaye rakhein aur aalasy ko tyagein.`,
+      careerFinance: `Vyapar aur naukri dono me sthirta rahegi. Purane investments se labh ke sanket hain. Nayi yojanaon ko aage badhane ke liye shubh samay hai.`,
+      loveRelationship: `Aapke shant aur prem-may vyavahar se parivar me khushiyan badhengi. Jeevan-sathi ke saath vishwas aur nikat-ta me vriddhi hogi.`,
+      healthWellness: `Swasthya uttam bana rahega. Pratahkaal thoda dhyan aur surya namaskar karne se sharir aur aatma dono urjawaan rahenge.`,
+      luckyColor: s.color,
+      luckyNumber: s.num,
+      luckyTime: s.time,
+      luckyGemstone: s.gem,
+      cosmicMantra: s.mantra,
+    };
   }
 
   private static async callGeminiWithFallback(

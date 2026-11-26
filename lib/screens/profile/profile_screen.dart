@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../widgets/common/star_background.dart';
 
@@ -18,9 +19,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _dailyNotifications = true;
-  bool _transitAlerts = true;
-
   void _showApiKeyDialog(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final currentKey = prefs.getString('gemini_api_key') ?? '';
@@ -477,47 +475,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // ── Section: Preferences ─────────────────────
                       _SectionHeader(title: 'Preferences', icon: Icons.tune_rounded),
                       const SizedBox(height: 10),
-                      Container(
-                        decoration: AppTheme.glassCard,
-                        child: Column(
-                          children: [
-                            SwitchListTile(
-                              title: Text(
-                                'Daily Horoscope Alerts',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textPrimary,
+                      Consumer<NotificationProvider>(
+                        builder: (context, notif, _) {
+                          return Container(
+                            decoration: AppTheme.glassCard,
+                            child: Column(
+                              children: [
+                                SwitchListTile(
+                                  title: Text(
+                                    'Daily Horoscope Alerts',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Receive Gemini celestial guidance at dawn',
+                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                  ),
+                                  value: notif.dailyHoroscopeAlert,
+                                  activeThumbColor: AppTheme.starGold,
+                                  onChanged: (val) => notif.updateSettings(dailyHoroscope: val),
                                 ),
-                              ),
-                              subtitle: Text(
-                                'Receive celestial guidance at dawn',
-                                style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
-                              ),
-                              value: _dailyNotifications,
-                              activeThumbColor: AppTheme.starGold,
-                              onChanged: (val) => setState(() => _dailyNotifications = val),
-                            ),
-                            const Divider(color: AppTheme.divider, height: 1),
-                            SwitchListTile(
-                              title: Text(
-                                'Planetary Transit Insights',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textPrimary,
+                                const Divider(color: AppTheme.divider, height: 1),
+                                SwitchListTile(
+                                  title: Text(
+                                    'Planetary Transit Insights',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Get alerted on major planetary shifts & Rahu Kaal',
+                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                  ),
+                                  value: notif.rahuKaalAlert,
+                                  activeThumbColor: AppTheme.starGold,
+                                  onChanged: (val) => notif.updateSettings(rahuKaal: val),
                                 ),
-                              ),
-                              subtitle: Text(
-                                'Get alerted on major planetary shifts',
-                                style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
-                              ),
-                              value: _transitAlerts,
-                              activeThumbColor: AppTheme.starGold,
-                              onChanged: (val) => setState(() => _transitAlerts = val),
+                                const Divider(color: AppTheme.divider, height: 1),
+                                ListTile(
+                                  leading: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppTheme.starGold.withValues(alpha: 0.15),
+                                    ),
+                                    child: const Icon(Icons.bolt_rounded, color: AppTheme.starGold, size: 20),
+                                  ),
+                                  title: Text(
+                                    'Test Gemini Daily Alert',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Generates & triggers today\'s horoscope via Gemini API',
+                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                  ),
+                                  trailing: notif.isLoading
+                                      ? const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.starGold),
+                                        )
+                                      : const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.starGold),
+                                  onTap: notif.isLoading
+                                      ? null
+                                      : () async {
+                                          final res = await notif.generateTodayHoroscope();
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(res != null
+                                                    ? '✨ Gemini Daily Horoscope notification generated & stored!'
+                                                    : 'Unable to connect to Gemini engine. Please check backend.'),
+                                                backgroundColor: AppTheme.royalPurple,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 24),
 

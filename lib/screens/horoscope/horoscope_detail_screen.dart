@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/horoscope_provider.dart';
+import '../../services/astrozen_api_service.dart';
 import '../../widgets/common/star_background.dart';
 
 class HoroscopeDetailScreen extends StatefulWidget {
@@ -18,6 +19,24 @@ class HoroscopeDetailScreen extends StatefulWidget {
 
 class _HoroscopeDetailScreenState extends State<HoroscopeDetailScreen> {
   String _selectedPeriod = 'Today';
+  Map<String, dynamic>? _geminiToday;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGeminiHoroscope();
+  }
+
+  void _fetchGeminiHoroscope() async {
+    try {
+      final res = await AstrozenApiService.getGeminiDailyHoroscope(widget.sign);
+      if (mounted && res != null) {
+        setState(() {
+          _geminiToday = res;
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,9 +187,59 @@ class _HoroscopeDetailScreenState extends State<HoroscopeDetailScreen> {
                       _SectionCard(
                         title: '$_selectedPeriod\'s Celestial Reading',
                         icon: Icons.auto_awesome_rounded,
-                        child: Text(
-                          horoData['reading'] as String? ?? horoData['today'] as String,
-                          style: GoogleFonts.outfit(fontSize: 14.5, color: AppTheme.textSecondary, height: 1.7),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (_selectedPeriod == 'Today' && _geminiToday != null) ...[
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.royalPurple.withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: AppTheme.starGold.withValues(alpha: 0.3)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.bolt_rounded, size: 13, color: AppTheme.starGold),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Daily Gemini 2.5 Flash Forecast',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppTheme.starGold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                _geminiToday!['overview'] ?? '',
+                                style: GoogleFonts.outfit(fontSize: 14.5, color: AppTheme.textSecondary, height: 1.7),
+                              ),
+                              if (_geminiToday!['careerFinance'] != null) ...[
+                                const SizedBox(height: 12),
+                                Text(
+                                  '💼 Career & Wealth: ${_geminiToday!['careerFinance']}',
+                                  style: GoogleFonts.outfit(fontSize: 13.5, color: AppTheme.textSecondary, height: 1.6),
+                                ),
+                              ],
+                              if (_geminiToday!['loveRelationship'] != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  '❤️ Love & Relationships: ${_geminiToday!['loveRelationship']}',
+                                  style: GoogleFonts.outfit(fontSize: 13.5, color: AppTheme.textSecondary, height: 1.6),
+                                ),
+                              ],
+                            ] else ...[
+                              Text(
+                                horoData['reading'] as String? ?? horoData['today'] as String,
+                                style: GoogleFonts.outfit(fontSize: 14.5, color: AppTheme.textSecondary, height: 1.7),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -202,10 +271,34 @@ class _HoroscopeDetailScreenState extends State<HoroscopeDetailScreen> {
                           mainAxisSpacing: 12,
                           childAspectRatio: 2.2,
                           children: [
-                            _AffinityTile(label: 'Lucky Number', value: horoData['lucky_number'] as String, icon: Icons.tag_rounded),
-                            _AffinityTile(label: 'Lucky Shade', value: horoData['lucky_color'] as String, icon: Icons.palette_outlined),
-                            _AffinityTile(label: 'Auspicious Direction', value: horoData['lucky_direction'] as String, icon: Icons.compass_calibration_outlined),
-                            _AffinityTile(label: 'Harmonic Gemstone', value: horoData['lucky_gemstone'] as String, icon: Icons.diamond_outlined),
+                            _AffinityTile(
+                              label: 'Lucky Number',
+                              value: (_selectedPeriod == 'Today' && _geminiToday?['luckyNumber'] != null)
+                                  ? _geminiToday!['luckyNumber'].toString()
+                                  : horoData['lucky_number'] as String,
+                              icon: Icons.tag_rounded,
+                            ),
+                            _AffinityTile(
+                              label: 'Lucky Shade',
+                              value: (_selectedPeriod == 'Today' && _geminiToday?['luckyColor'] != null)
+                                  ? _geminiToday!['luckyColor'].toString()
+                                  : horoData['lucky_color'] as String,
+                              icon: Icons.palette_outlined,
+                            ),
+                            _AffinityTile(
+                              label: 'Auspicious Timing',
+                              value: (_selectedPeriod == 'Today' && _geminiToday?['luckyTime'] != null)
+                                  ? _geminiToday!['luckyTime'].toString()
+                                  : (horoData['lucky_direction'] as String),
+                              icon: Icons.compass_calibration_outlined,
+                            ),
+                            _AffinityTile(
+                              label: 'Harmonic Gemstone',
+                              value: (_selectedPeriod == 'Today' && _geminiToday?['luckyGemstone'] != null)
+                                  ? _geminiToday!['luckyGemstone'].toString()
+                                  : horoData['lucky_gemstone'] as String,
+                              icon: Icons.diamond_outlined,
+                            ),
                           ],
                         ),
                       ),

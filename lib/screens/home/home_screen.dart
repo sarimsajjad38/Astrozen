@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../widgets/common/star_background.dart';
 import '../horoscope/horoscope_screen.dart';
@@ -236,45 +237,105 @@ class _HomeTab extends StatelessWidget {
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => context.go('/subscribe'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.goldGradient,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.starGold.withValues(alpha: 0.2),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            sub.isSubscribed
-                                ? Icons.verified_rounded
-                                : Icons.star_rounded,
-                            size: 15,
-                            color: AppTheme.deepSpace,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            sub.isSubscribed ? 'Premium' : 'Trial ₹11',
-                            style: GoogleFonts.outfit(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.deepSpace,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Consumer<NotificationProvider>(
+                        builder: (context, notif, _) {
+                          final unread = notif.unreadCount;
+                          return GestureDetector(
+                            onTap: () => _showNotificationsSheet(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(9),
+                              decoration: BoxDecoration(
+                                color: AppTheme.cardBgLight,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: unread > 0 ? AppTheme.starGold : AppTheme.divider,
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Icon(
+                                    unread > 0
+                                        ? Icons.notifications_active_rounded
+                                        : Icons.notifications_none_rounded,
+                                    size: 19,
+                                    color: unread > 0 ? AppTheme.starGold : AppTheme.textPrimary,
+                                  ),
+                                  if (unread > 0)
+                                    Positioned(
+                                      top: -5,
+                                      right: -5,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFFF3366),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                        child: Center(
+                                          child: Text(
+                                            '$unread',
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () => context.go('/subscribe'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.goldGradient,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.starGold.withValues(alpha: 0.2),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                sub.isSubscribed
+                                    ? Icons.verified_rounded
+                                    : Icons.star_rounded,
+                                size: 15,
+                                color: AppTheme.deepSpace,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                sub.isSubscribed ? 'Premium' : 'Trial ₹11',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.deepSpace,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1095,3 +1156,591 @@ class _NavItem {
 
   _NavItem({required this.icon, required this.activeIcon, required this.label});
 }
+
+// ── Cosmic Notifications & Daily Gemini Horoscope Sheet ─────────────────────
+
+void _showNotificationsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) => DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: AppTheme.cardBg,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black54,
+              blurRadius: 24,
+              offset: Offset(0, -6),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 44,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textMuted.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+
+            // Sheet Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.starGold.withValues(alpha: 0.15),
+                        ),
+                        child: const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: AppTheme.starGold,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Cosmic Notifications',
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            'Daily Gemini Horoscope & Transit Alerts',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11.5,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    icon: const Icon(Icons.close_rounded, color: AppTheme.textMuted),
+                  ),
+                ],
+              ),
+            ),
+
+            // Trigger Today's Gemini Forecast CTA Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              child: Consumer<NotificationProvider>(
+                builder: (context, notif, _) {
+                  return Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.royalPurple.withValues(alpha: 0.4),
+                          AppTheme.cardBgLight,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AppTheme.starGold.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.bolt_rounded, color: AppTheme.starGold, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Today\'s Celestial Alert',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                'Generate real-time horoscope alert via Gemini API',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.starGold,
+                            foregroundColor: AppTheme.deepSpace,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: notif.isLoading
+                              ? null
+                              : () async {
+                                  final result = await notif.generateTodayHoroscope();
+                                  if (context.mounted && result != null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('✨ Today\'s Gemini Horoscope Notification Delivered!'),
+                                        backgroundColor: AppTheme.royalPurple,
+                                      ),
+                                    );
+                                  }
+                                },
+                          child: notif.isLoading
+                              ? const SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppTheme.deepSpace,
+                                  ),
+                                )
+                              : Text(
+                                  'Generate',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 8),
+            const Divider(color: AppTheme.divider, height: 1),
+
+            // Notification List
+            Expanded(
+              child: Consumer<NotificationProvider>(
+                builder: (context, notif, _) {
+                  if (notif.isLoading && notif.notifications.isEmpty) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: AppTheme.starGold),
+                    );
+                  }
+
+                  if (notif.notifications.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.notifications_off_outlined,
+                              size: 48,
+                              color: AppTheme.textMuted.withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(height: 14),
+                            Text(
+                              'No Notifications Yet',
+                              style: GoogleFonts.outfit(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Tap "Generate" above to receive today\'s celestial forecast from Google Gemini!',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.outfit(
+                                fontSize: 12.5,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                    itemCount: notif.notifications.length,
+                    separatorBuilder: (_, index) => const SizedBox(height: 10),
+                    itemBuilder: (ctx, i) {
+                      final item = notif.notifications[i];
+                      final isRead = item['isRead'] == true;
+                      final type = item['type'] ?? 'DAILY_HOROSCOPE';
+                      final data = (item['data'] is Map)
+                          ? Map<String, dynamic>.from(item['data'])
+                          : <String, dynamic>{};
+
+                      IconData typeIcon = Icons.auto_awesome_rounded;
+                      Color typeColor = AppTheme.starGold;
+                      if (type == 'RAHU_KAAL') {
+                        typeIcon = Icons.warning_amber_rounded;
+                        typeColor = const Color(0xFFFF9900);
+                      } else if (type == 'WALLET' || type == 'CONSULTATION') {
+                        typeIcon = Icons.account_balance_wallet_rounded;
+                        typeColor = const Color(0xFF00E676);
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          if (!isRead && item['id'] != null) {
+                            notif.markAsRead(item['id'].toString());
+                          }
+                          _showHoroscopeDetailDialog(ctx, item);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: isRead
+                                ? AppTheme.cardBgLight.withValues(alpha: 0.5)
+                                : AppTheme.cardBgLight,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isRead
+                                  ? AppTheme.divider
+                                  : typeColor.withValues(alpha: 0.4),
+                              width: isRead ? 0.8 : 1.2,
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(9),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: typeColor.withValues(alpha: 0.15),
+                                ),
+                                child: Icon(typeIcon, color: typeColor, size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item['title'] ?? 'Celestial Forecast',
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 14,
+                                              fontWeight: isRead
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w700,
+                                              color: AppTheme.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (!isRead)
+                                          Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xFFFF3366),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      item['body'] ?? '',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        color: AppTheme.textSecondary,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    if (data['luckyColor'] != null || data['luckyNumber'] != null) ...[
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 6,
+                                        runSpacing: 4,
+                                        children: [
+                                          if (data['luckyColor'] != null)
+                                            _TagPill(
+                                              label: 'Color: ${data['luckyColor']}',
+                                              color: AppTheme.starGold,
+                                            ),
+                                          if (data['luckyNumber'] != null)
+                                            _TagPill(
+                                              label: 'Lucky #: ${data['luckyNumber']}',
+                                              color: AppTheme.roseGold,
+                                            ),
+                                          if (data['luckyTime'] != null)
+                                            _TagPill(
+                                              label: 'Auspicious: ${data['luckyTime']}',
+                                              color: Colors.lightBlueAccent,
+                                            ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+void _showHoroscopeDetailDialog(BuildContext context, Map<String, dynamic> item) {
+  final data = (item['data'] is Map) ? Map<String, dynamic>.from(item['data']) : <String, dynamic>{};
+  final title = item['title'] ?? 'Daily Horoscope Forecast';
+  final overview = data['overview'] ?? item['body'] ?? '';
+  final career = data['careerFinance'];
+  final love = data['loveRelationship'];
+  final health = data['healthWellness'];
+  final mantra = data['cosmicMantra'];
+
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: AppTheme.cardBg,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      title: Row(
+        children: [
+          const Icon(Icons.auto_awesome_rounded, color: AppTheme.starGold, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              style: GoogleFonts.outfit(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.royalPurple.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.starGold.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.psychology_rounded, size: 13, color: AppTheme.starGold),
+                  const SizedBox(width: 5),
+                  Text(
+                    'Powered by Google Gemini 2.5 Flash',
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.starGold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              '🌟 Daily Guidance',
+              style: GoogleFonts.outfit(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.starGold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              overview,
+              style: GoogleFonts.outfit(
+                fontSize: 12.5,
+                color: AppTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
+            if (career != null && career.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                '💼 Career & Dhan Labh',
+                style: GoogleFonts.outfit(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.starGold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                career,
+                style: GoogleFonts.outfit(
+                  fontSize: 12.5,
+                  color: AppTheme.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ],
+            if (love != null && love.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                '❤️ Prem & Parivar',
+                style: GoogleFonts.outfit(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.starGold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                love,
+                style: GoogleFonts.outfit(
+                  fontSize: 12.5,
+                  color: AppTheme.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ],
+            if (health != null && health.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                '🌿 Swasthya & Urja',
+                style: GoogleFonts.outfit(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.starGold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                health,
+                style: GoogleFonts.outfit(
+                  fontSize: 12.5,
+                  color: AppTheme.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ],
+            if (mantra != null && mantra.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBgLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.starGold.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '🕉️ Dainik Shubh Mantra',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.starGold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      mantra,
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textPrimary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text(
+            'Close',
+            style: GoogleFonts.outfit(
+              color: AppTheme.starGold,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _TagPill extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _TagPill({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 0.8),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.outfit(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+

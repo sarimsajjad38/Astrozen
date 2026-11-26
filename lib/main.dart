@@ -5,6 +5,7 @@ import 'core/router/app_router.dart';
 import 'providers/auth_provider.dart';
 import 'providers/horoscope_provider.dart';
 import 'providers/kundli_provider.dart';
+import 'providers/notification_provider.dart';
 import 'providers/subscription_provider.dart';
 
 void main() async {
@@ -12,9 +13,11 @@ void main() async {
 
   final authProvider = AuthProvider();
   final subscriptionProvider = SubscriptionProvider();
+  final notificationProvider = NotificationProvider();
 
   await authProvider.init();
   await subscriptionProvider.init();
+  await notificationProvider.init();
 
   runApp(
     MultiProvider(
@@ -23,6 +26,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => HoroscopeProvider()),
         ChangeNotifierProvider(create: (_) => KundliProvider()),
         ChangeNotifierProvider.value(value: subscriptionProvider),
+        ChangeNotifierProvider.value(value: notificationProvider),
       ],
       child: const AstroZenApp(),
     ),

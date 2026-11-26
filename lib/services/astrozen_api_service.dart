@@ -397,4 +397,152 @@ class AstrozenApiService {
     } catch (_) {}
     return false;
   }
+
+  // ── Push Notifications & Daily Horoscope Alerts ─────────────────────────────
+
+  /// Retrieves all notifications for the authenticated user from Supabase.
+  static Future<List<Map<String, dynamic>>> getUserNotifications() async {
+    try {
+      final token = await getToken();
+      if (token == null) return [];
+
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/notifications');
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] is List) {
+          return List<Map<String, dynamic>>.from(decoded['data']);
+        }
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  /// Marks a specific notification as read.
+  static Future<bool> markNotificationAsRead(String notificationId) async {
+    try {
+      final token = await getToken();
+      if (token == null) return false;
+
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/notifications/$notificationId/read');
+      final response = await http.patch(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 4));
+
+      return response.statusCode == 200;
+    } catch (_) {}
+    return false;
+  }
+
+  /// Updates notification preferences in Supabase.
+  static Future<bool> updateNotificationSettings({
+    bool? notificationsEnabled,
+    bool? dailyHoroscopeAlert,
+    bool? rahuKaalAlert,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) return false;
+
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/notifications/settings');
+      final body = <String, dynamic>{};
+      if (notificationsEnabled != null) body['notificationsEnabled'] = notificationsEnabled;
+      if (dailyHoroscopeAlert != null) body['dailyHoroscopeAlert'] = dailyHoroscopeAlert;
+      if (rahuKaalAlert != null) body['rahuKaalAlert'] = rahuKaalAlert;
+
+      final response = await http.put(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      ).timeout(const Duration(seconds: 5));
+
+      return response.statusCode == 200;
+    } catch (_) {}
+    return false;
+  }
+
+  /// Requests Gemini API to generate today's daily horoscope notification for the user.
+  static Future<Map<String, dynamic>?> generateMyDailyHoroscopeNotification() async {
+    try {
+      final token = await getToken();
+      if (token == null) return null;
+
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/notifications/daily-horoscope/generate-my-daily');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true) {
+          return decoded;
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetches Gemini-powered daily horoscope for any zodiac sign.
+  static Future<Map<String, dynamic>?> getGeminiDailyHoroscope(String sign) async {
+    try {
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/horoscope/gemini-daily?sign=${Uri.encodeComponent(sign)}');
+      final response = await http.get(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 6));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return Map<String, dynamic>.from(decoded['data']);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Registers or updates device FCM token.
+  static Future<bool> registerFcmToken(String fcmToken) async {
+    try {
+      final token = await getToken();
+      if (token == null) return false;
+
+      final baseUrl = await getBaseUrl();
+      final uri = Uri.parse('$baseUrl/api/v1/notifications/fcm-token');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'fcmToken': fcmToken}),
+      ).timeout(const Duration(seconds: 5));
+
+      return response.statusCode == 200;
+    } catch (_) {}
+    return false;
+  }
 }

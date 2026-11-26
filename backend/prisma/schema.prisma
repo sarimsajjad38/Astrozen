@@ -20,6 +20,10 @@ model User {
   isSubscribed          Boolean          @default(false)
   subscriptionTier      String?          @default("Free")
   subscriptionExpiresAt DateTime?
+  fcmToken              String?
+  notificationsEnabled  Boolean          @default(true)
+  dailyHoroscopeAlert   Boolean          @default(true)
+  rahuKaalAlert         Boolean          @default(true)
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
 
@@ -28,8 +32,23 @@ model User {
   consultations         Consultation[]
   iapPurchases          IapPurchase[]
   walletLedger          WalletLedger[]
+  notifications         Notification[]
 
   @@map("users")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  type      String   @default("DAILY_HOROSCOPE") // "DAILY_HOROSCOPE" | "RAHU_KAAL" | "CONSULTATION" | "WALLET"
+  data      Json?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
 }
 
 model KundliProfile {
