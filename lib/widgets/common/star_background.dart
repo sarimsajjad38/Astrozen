@@ -11,7 +11,7 @@ class StarBackground extends StatefulWidget {
 
 class _StarBackgroundState extends State<StarBackground>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
@@ -30,45 +30,67 @@ class _StarBackgroundState extends State<StarBackground>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) => CustomPaint(
-          painter: _StarPainter(_controller.value),
-          size: Size.infinite,
+    return RepaintBoundary(
+      child: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) => CustomPaint(
+            painter: _StaticStarPainter(_controller.value),
+            size: Size.infinite,
+          ),
         ),
       ),
     );
   }
 }
 
-class _StarPainter extends CustomPainter {
+class _StarPoint {
+  final double xPercent;
+  final double yPercent;
+  final double radius;
+  final double phase;
+
+  const _StarPoint(this.xPercent, this.yPercent, this.radius, this.phase);
+}
+
+class _StaticStarPainter extends CustomPainter {
   final double progress;
-  _StarPainter(this.progress);
+  static final Paint _paint = Paint()..style = PaintingStyle.fill;
+
+  // Pre-computed static points - ZERO runtime Random instantiation or allocations
+  static final List<_StarPoint> _stars = () {
+    final list = <_StarPoint>[];
+    final rand = math.Random(42);
+    for (int i = 0; i < 45; i++) {
+      list.add(_StarPoint(
+        rand.nextDouble(),
+        rand.nextDouble(),
+        rand.nextDouble() * 1.3 + 0.6,
+        (i * 0.4) % (2 * math.pi),
+      ));
+    }
+    return List<_StarPoint>.unmodifiable(list);
+  }();
+
+  _StaticStarPainter(this.progress);
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
 
-    for (int i = 0; i < 60; i++) {
-      final rand = math.Random(i * 137);
-      final x = rand.nextDouble() * size.width;
-      final y = rand.nextDouble() * size.height;
-      final radius = rand.nextDouble() * 1.5 + 0.5;
+    final w = size.width;
+    final h = size.height;
+    final twoPi = 2 * math.pi;
 
-      final phase = (i * 0.3) % (2 * math.pi);
-      final alpha = (math.sin(progress * 2 * math.pi + phase) + 1) / 2 * 0.7 + 0.2;
-
-      final paint = Paint()
-        ..color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0))
-        ..style = PaintingStyle.fill;
-
-      canvas.drawCircle(Offset(x, y), radius, paint);
+    for (final s in _stars) {
+      final alpha = (math.sin(progress * twoPi + s.phase) + 1.0) * 0.35 + 0.15;
+      _paint.color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0));
+      canvas.drawCircle(Offset(s.xPercent * w, s.yPercent * h), s.radius, _paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _StarPainter oldDelegate) =>
+  bool shouldRepaint(covariant _StaticStarPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }

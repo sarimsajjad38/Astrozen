@@ -99,7 +99,7 @@ class _PalmReadingScreenState extends State<PalmReadingScreen>
 
       if (mounted) {
         setState(() => _isAnalyzing = false);
-        context.go('/palm-reading/result', extra: reading.toMap());
+        context.push('/palm-reading/result', extra: reading.toMap());
       }
     } catch (e) {
       if (mounted) {

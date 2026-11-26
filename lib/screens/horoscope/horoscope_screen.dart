@@ -35,9 +35,10 @@ class _HoroscopeScreenState extends State<HoroscopeScreen>
     final signs = AppConstants.zodiacSigns;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          const StarBackground(),
+          if (!widget.isTab) const StarBackground(),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +131,7 @@ class _HoroscopeScreenState extends State<HoroscopeScreen>
                           final s = signs[i];
                           final color = Color(s['color'] as int);
                           return GestureDetector(
-                            onTap: () => context.go(
+                            onTap: () => context.push(
                               '/horoscope/${(s['name'] as String).toLowerCase()}',
                             ),
                             child: Container(

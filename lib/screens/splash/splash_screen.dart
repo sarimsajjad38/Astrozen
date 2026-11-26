@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/common/star_background.dart';
 import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
@@ -67,27 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
         child: Stack(
           children: [
             // ── Star Field Background ──────────────────────────────
-            ...List.generate(80, (i) {
-              final rand = math.Random(i);
-              return Positioned(
-                left: rand.nextDouble() * MediaQuery.of(context).size.width,
-                top: rand.nextDouble() * MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _rotateController,
-                  builder: (context, child) => Opacity(
-                    opacity: (math.sin(_rotateController.value * 2 * math.pi + i) + 1) / 2 * 0.8 + 0.2,
-                    child: Container(
-                      width: rand.nextDouble() * 3 + 1,
-                      height: rand.nextDouble() * 3 + 1,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
+            const StarBackground(),
 
             // ── Rotating Celestial Ring ────────────────────────────
             Center(

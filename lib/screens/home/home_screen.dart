@@ -71,22 +71,22 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentTab,
+      body: Stack(
         children: [
-          Stack(
+          const StarBackground(),
+          IndexedStack(
+            index: _currentTab,
             children: [
-              const StarBackground(),
               _HomeTab(
                 pulseController: _pulseController,
                 onNavigateToTab: (index) => setState(() => _currentTab = index),
               ),
+              const HoroscopeScreen(isTab: true),
+              const KundliScreen(isTab: true),
+              const ExpertsScreen(isTab: true),
+              const ProfileScreen(isTab: true),
             ],
           ),
-          const HoroscopeScreen(isTab: true),
-          const KundliScreen(isTab: true),
-          const ExpertsScreen(isTab: true),
-          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _buildNavBar(),
@@ -685,14 +685,14 @@ class _FeatureGrid extends StatelessWidget {
         icon: Icons.pan_tool_outlined,
         name: 'Palm Reading',
         subtitle: 'AI line detection',
-        onTap: () => context.go('/palm-reading'),
+        onTap: () => context.push('/palm-reading'),
         color: AppTheme.roseGold,
       ),
       _FeatureItem(
         icon: Icons.explore_outlined,
         name: 'Vastu',
         subtitle: 'Spatial harmony',
-        onTap: () => context.go('/vastu'),
+        onTap: () => context.push('/vastu'),
         color: AppTheme.successGreen,
       ),
       _FeatureItem(

@@ -12,7 +12,8 @@ import '../../providers/subscription_provider.dart';
 import '../../widgets/common/star_background.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool isTab;
+  const ProfileScreen({super.key, this.isTab = false});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -225,9 +226,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final signColor = Color(signData['color'] as int);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          const StarBackground(),
+          if (!widget.isTab) const StarBackground(),
           SafeArea(
             child: CustomScrollView(
               slivers: [

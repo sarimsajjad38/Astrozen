@@ -36,7 +36,11 @@ class AuthProvider extends ChangeNotifier {
 
     notifyListeners();
 
-    // Sync with backend if token exists, or auto-provision anonymous guest session
+    // Non-blocking background sync with backend
+    _syncBackendSession();
+  }
+
+  void _syncBackendSession() async {
     try {
       final token = await AstrozenApiService.getToken();
       if (token == null) {
@@ -132,6 +136,17 @@ class AuthProvider extends ChangeNotifier {
         await AstrozenApiService.updateUserProfile(zodiacSign: _userZodiac);
       }
     } catch (_) {}
+  }
+
+  Future<void> creditSubscription(int minutes, String tier) async {
+    _walletMinutes += minutes;
+    _isSubscribed = true;
+    _subscriptionTier = tier;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('walletMinutes', _walletMinutes);
+    await prefs.setBool('isSubscribed', true);
+    await prefs.setString('subscriptionTier', tier);
+    notifyListeners();
   }
 
   Future<void> logout() async {

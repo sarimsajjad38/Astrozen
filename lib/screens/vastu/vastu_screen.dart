@@ -15,11 +15,11 @@ class VastuScreen extends StatefulWidget {
 class _VastuScreenState extends State<VastuScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String? _mainDoorDir;
-  String? _kitchenDir;
-  String? _masterBedDir;
-  bool _analysisReady = false;
-  int _vastuScore = 0;
+  String? _mainDoorDir = 'North';
+  String? _kitchenDir = 'SouthEast';
+  String? _masterBedDir = 'SouthWest';
+  bool _analysisReady = true;
+  int _vastuScore = 85;
 
   @override
   void initState() {

@@ -216,6 +216,26 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                           : const Text('Send Verification Code'),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        context.read<AuthProvider>().login(
+                          '',
+                          _nameController.text.trim().isEmpty ? 'Cosmic Seeker' : _nameController.text.trim(),
+                        );
+                        context.go('/home');
+                      },
+                      child: Text(
+                        'Skip for now · Continue as Guest',
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          color: AppTheme.starGold,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
                 ] else ...[
                   // OTP field
                   Text(

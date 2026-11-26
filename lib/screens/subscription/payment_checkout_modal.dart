@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 
 class PaymentCheckoutModal {
@@ -38,15 +39,19 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
     if (!mounted) return;
 
     final sub = context.read<SubscriptionProvider>();
+    final auth = context.read<AuthProvider>();
     switch (widget.planIndex) {
       case 0:
         await sub.activateTrial();
+        await auth.creditSubscription(15, 'Trial VIP');
         break;
       case 1:
         await sub.activateMonthly();
+        await auth.creditSubscription(45, 'Monthly VIP');
         break;
       case 2:
         await sub.activateAnnual();
+        await auth.creditSubscription(120, 'Annual VIP');
         break;
     }
 

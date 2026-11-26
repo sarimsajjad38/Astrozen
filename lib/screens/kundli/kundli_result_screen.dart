@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/common/star_background.dart';
 
@@ -83,7 +84,16 @@ class _KundliResultScreenState extends State<KundliResultScreen>
                       ),
                       IconButton(
                         icon: const Icon(Icons.share_outlined, color: AppTheme.starGold),
-                        onPressed: () {},
+                        onPressed: () {
+                          Share.share(
+                            '🌟 AstroZen Vedic Kundli for ${d['name'] ?? 'Cosmic Seeker'}:\n'
+                            '• Lagna (Ascendant): ${d['lagna'] ?? '—'}\n'
+                            '• Rashi (Moon Sign): ${d['rashi'] ?? d['moonSign'] ?? '—'}\n'
+                            '• Nakshatra: ${d['nakshatra'] ?? '—'}\n\n'
+                            'Calculate your Kundli & Ashtakoot Milan on AstroZen AI App!',
+                            subject: 'AstroZen Kundli Birth Chart',
+                          );
+                        },
                       ),
                     ],
                   ),

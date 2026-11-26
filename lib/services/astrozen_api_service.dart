@@ -6,15 +6,18 @@ import 'ai_astrology_service.dart';
 import 'vedic_astronomy_engine.dart';
 
 class AstrozenApiService {
+  // In-memory response caches to make tab switching & calculations instantaneous
+  static final Map<String, Map<String, dynamic>> _kundliCache = {};
+  static final Map<String, Map<String, dynamic>> _matchingCache = {};
+  static final Map<String, Map<String, dynamic>> _geminiHoroscopeCache = {};
+
   // Default development addresses:
   // - 10.0.2.2 for Android Emulator
-  // - 127.0.0.1 for Desktop/iOS Simulator
-  // - Or custom LAN IP for physical device
+  // - 127.0.0.1 for Desktop/iOS Simulator / Physical Device via adb reverse
   static Future<String> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
     final custom = prefs.getString('api_base_url');
     if (custom != null && custom.isNotEmpty) return custom;
-    // When using adb reverse or local desktop, 127.0.0.1 is universal
     return 'http://127.0.0.1:4000';
   }
 
@@ -30,6 +33,11 @@ class AstrozenApiService {
     required String timeOfBirth,
     required String placeOfBirth,
   }) async {
+    final cacheKey = '$name|$dob|$timeOfBirth|$placeOfBirth';
+    if (_kundliCache.containsKey(cacheKey)) {
+      return _kundliCache[cacheKey]!;
+    }
+
     try {
       final baseUrl = await getBaseUrl();
       final uri = Uri.parse('$baseUrl/api/v1/astrology/kundli');
@@ -44,12 +52,14 @@ class AstrozenApiService {
               'pob': placeOfBirth,
             }),
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 2));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return Map<String, dynamic>.from(decoded['data']);
+          final res = Map<String, dynamic>.from(decoded['data']);
+          _kundliCache[cacheKey] = res;
+          return res;
         }
       }
     } catch (_) {
@@ -83,13 +93,15 @@ class AstrozenApiService {
       }
     } catch (_) {}
 
-    return VedicAstronomyEngine.calculateFullKundli(
+    final localResult = VedicAstronomyEngine.calculateFullKundli(
       name: name,
       birthDate: DateTime(year, month, day),
       hour: hour,
       minute: minute,
       place: placeOfBirth,
     );
+    _kundliCache[cacheKey] = localResult;
+    return localResult;
   }
 
   /// Computes 36-point Ashtakoot Gun Milan.
@@ -99,6 +111,11 @@ class AstrozenApiService {
     required String girlName,
     required String girlDob,
   }) async {
+    final cacheKey = '$boyName|$boyDob|$girlName|$girlDob';
+    if (_matchingCache.containsKey(cacheKey)) {
+      return _matchingCache[cacheKey]!;
+    }
+
     try {
       final baseUrl = await getBaseUrl();
       final uri = Uri.parse('$baseUrl/api/v1/astrology/matching');
@@ -111,7 +128,7 @@ class AstrozenApiService {
               'girlDob': girlDob,
             }),
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 2));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -121,6 +138,7 @@ class AstrozenApiService {
           data['girlName'] = girlName;
           data['boyDob'] = boyDob;
           data['girlDob'] = girlDob;
+          _matchingCache[cacheKey] = data;
           return data;
         }
       }
@@ -150,6 +168,7 @@ class AstrozenApiService {
     matchData['girlName'] = girlName;
     matchData['boyDob'] = boyDob;
     matchData['girlDob'] = girlDob;
+    _matchingCache[cacheKey] = matchData;
     return matchData;
   }
 
@@ -506,18 +525,25 @@ class AstrozenApiService {
 
   /// Fetches Gemini-powered daily horoscope for any zodiac sign.
   static Future<Map<String, dynamic>?> getGeminiDailyHoroscope(String sign) async {
+    final key = sign.toLowerCase();
+    if (_geminiHoroscopeCache.containsKey(key)) {
+      return _geminiHoroscopeCache[key]!;
+    }
+
     try {
       final baseUrl = await getBaseUrl();
       final uri = Uri.parse('$baseUrl/api/v1/horoscope/gemini-daily?sign=${Uri.encodeComponent(sign)}');
       final response = await http.get(
         uri,
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 6));
+      ).timeout(const Duration(seconds: 3));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return Map<String, dynamic>.from(decoded['data']);
+          final data = Map<String, dynamic>.from(decoded['data']);
+          _geminiHoroscopeCache[key] = data;
+          return data;
         }
       }
     } catch (_) {}

@@ -98,9 +98,10 @@ class _ExpertsScreenState extends State<ExpertsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          const StarBackground(),
+          if (!widget.isTab) const StarBackground(),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +192,7 @@ class _ExpertsScreenState extends State<ExpertsScreen> {
                     itemBuilder: (context, i) {
                       final e = _filteredExperts[i];
                       return GestureDetector(
-                        onTap: () => context.go('/experts/${e['id']}'),
+                        onTap: () => context.push('/experts/${e['id']}'),
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 14),
                           padding: const EdgeInsets.all(16),

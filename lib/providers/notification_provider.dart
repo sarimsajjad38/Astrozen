@@ -15,7 +15,8 @@ class NotificationProvider extends ChangeNotifier {
   int get unreadCount => _notifications.where((n) => n['isRead'] != true).length;
 
   Future<void> init() async {
-    await fetchNotifications();
+    // Non-blocking background fetch
+    fetchNotifications();
   }
 
   Future<void> fetchNotifications() async {

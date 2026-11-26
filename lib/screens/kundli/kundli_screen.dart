@@ -86,16 +86,17 @@ class _KundliScreenState extends State<KundliScreen> {
       timeOfBirth: _timeCtrl.text.isEmpty ? '12:00 PM' : _timeCtrl.text,
       placeOfBirth: _placeCtrl.text.isEmpty ? 'New Delhi, India' : _placeCtrl.text,
     );
-    if (mounted) context.go('/kundli/result', extra: data);
+    if (mounted) context.push('/kundli/result', extra: data);
   }
 
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<KundliProvider>().isGenerating;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          const StarBackground(),
+          if (!widget.isTab) const StarBackground(),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
