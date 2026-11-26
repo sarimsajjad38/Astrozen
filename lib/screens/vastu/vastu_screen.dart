@@ -35,7 +35,9 @@ class _VastuScreenState extends State<VastuScreen>
 
   void _analyzeVastu() {
     int score = 50;
-    if (_mainDoorDir == 'North' || _mainDoorDir == 'East' || _mainDoorDir == 'NorthEast') {
+    if (_mainDoorDir == 'North' ||
+        _mainDoorDir == 'East' ||
+        _mainDoorDir == 'NorthEast') {
       score += 20;
     }
     if (_kitchenDir == 'SouthEast') {
@@ -79,11 +81,19 @@ class _VastuScreenState extends State<VastuScreen>
                             color: AppTheme.cardBgLight,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new, size: 16, color: AppTheme.textPrimary),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            size: 16,
+                            color: AppTheme.textPrimary,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 14),
-                      const Icon(Icons.explore_outlined, color: AppTheme.starGold, size: 22),
+                      const Icon(
+                        Icons.explore_outlined,
+                        color: AppTheme.starGold,
+                        size: 22,
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         'Vastu Shastra Compass',
@@ -123,21 +133,24 @@ class _VastuScreenState extends State<VastuScreen>
                               label: 'Main Entrance Facing',
                               icon: Icons.door_front_door_outlined,
                               selected: _mainDoorDir,
-                              onSelect: (val) => setState(() => _mainDoorDir = val),
+                              onSelect: (val) =>
+                                  setState(() => _mainDoorDir = val),
                             ),
                             const SizedBox(height: 18),
                             _DirectionSelector(
                               label: 'Kitchen Quadrant',
                               icon: Icons.soup_kitchen_outlined,
                               selected: _kitchenDir,
-                              onSelect: (val) => setState(() => _kitchenDir = val),
+                              onSelect: (val) =>
+                                  setState(() => _kitchenDir = val),
                             ),
                             const SizedBox(height: 18),
                             _DirectionSelector(
                               label: 'Master Bedroom Location',
                               icon: Icons.bed_outlined,
                               selected: _masterBedDir,
-                              onSelect: (val) => setState(() => _masterBedDir = val),
+                              onSelect: (val) =>
+                                  setState(() => _masterBedDir = val),
                             ),
                             const SizedBox(height: 24),
 
@@ -145,7 +158,9 @@ class _VastuScreenState extends State<VastuScreen>
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: _analyzeVastu,
-                                child: const Text('Calculate Spatial Harmony Score'),
+                                child: const Text(
+                                  'Calculate Spatial Harmony Score',
+                                ),
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -156,13 +171,20 @@ class _VastuScreenState extends State<VastuScreen>
                                 decoration: BoxDecoration(
                                   color: AppTheme.cardBg,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppTheme.starGold.withValues(alpha: 0.4)),
+                                  border: Border.all(
+                                    color: AppTheme.starGold.withValues(
+                                      alpha: 0.4,
+                                    ),
+                                  ),
                                 ),
                                 child: Column(
                                   children: [
                                     Text(
                                       'Vastu Harmony Index',
-                                      style: GoogleFonts.outfit(fontSize: 14, color: AppTheme.textSecondary),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: AppTheme.textSecondary,
+                                      ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
@@ -179,7 +201,11 @@ class _VastuScreenState extends State<VastuScreen>
                                           ? 'Highly auspicious orientation fostering stability and vitality.'
                                           : 'Moderate spatial alignment. Placement adjustments can enhance tranquility.',
                                       textAlign: TextAlign.center,
-                                      style: GoogleFonts.outfit(fontSize: 13, color: AppTheme.textPrimary, height: 1.5),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 13,
+                                        color: AppTheme.textPrimary,
+                                        height: 1.5,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -205,16 +231,23 @@ class _VastuScreenState extends State<VastuScreen>
                                   height: 44,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppTheme.royalPurple.withValues(alpha: 0.25),
+                                    color: AppTheme.royalPurple.withValues(
+                                      alpha: 0.25,
+                                    ),
                                   ),
                                   child: const Center(
-                                    child: Icon(Icons.explore_outlined, color: AppTheme.starGold, size: 20),
+                                    child: Icon(
+                                      Icons.explore_outlined,
+                                      color: AppTheme.starGold,
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         d['dir'] as String,
@@ -226,12 +259,18 @@ class _VastuScreenState extends State<VastuScreen>
                                       ),
                                       Text(
                                         'Ruler: ${d['ruler']} · Element: ${d['element']}',
-                                        style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textSecondary),
+                                        style: GoogleFonts.outfit(
+                                          fontSize: 12,
+                                          color: AppTheme.textSecondary,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         'Ideal for: ${d['good']}',
-                                        style: GoogleFonts.outfit(fontSize: 11, color: AppTheme.textMuted),
+                                        style: GoogleFonts.outfit(
+                                          fontSize: 11,
+                                          color: AppTheme.textMuted,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -267,8 +306,14 @@ class _DirectionSelector extends StatelessWidget {
   });
 
   static const _directions = [
-    'North', 'NorthEast', 'East', 'SouthEast',
-    'South', 'SouthWest', 'West', 'NorthWest',
+    'North',
+    'NorthEast',
+    'East',
+    'SouthEast',
+    'South',
+    'SouthWest',
+    'West',
+    'NorthWest',
   ];
 
   @override
@@ -282,7 +327,11 @@ class _DirectionSelector extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+              style: GoogleFonts.outfit(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
             ),
           ],
         ),
@@ -301,7 +350,9 @@ class _DirectionSelector extends StatelessWidget {
                 color: isSel ? Colors.white : AppTheme.textMuted,
                 fontSize: 12,
               ),
-              side: BorderSide(color: isSel ? AppTheme.starGold : Colors.transparent),
+              side: BorderSide(
+                color: isSel ? AppTheme.starGold : Colors.transparent,
+              ),
               onSelected: (val) {
                 if (val) onSelect(d);
               },

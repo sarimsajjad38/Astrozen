@@ -63,12 +63,14 @@ class _StaticStarPainter extends CustomPainter {
     final list = <_StarPoint>[];
     final rand = math.Random(42);
     for (int i = 0; i < 45; i++) {
-      list.add(_StarPoint(
-        rand.nextDouble(),
-        rand.nextDouble(),
-        rand.nextDouble() * 1.3 + 0.6,
-        (i * 0.4) % (2 * math.pi),
-      ));
+      list.add(
+        _StarPoint(
+          rand.nextDouble(),
+          rand.nextDouble(),
+          rand.nextDouble() * 1.3 + 0.6,
+          (i * 0.4) % (2 * math.pi),
+        ),
+      );
     }
     return List<_StarPoint>.unmodifiable(list);
   }();
@@ -86,7 +88,11 @@ class _StaticStarPainter extends CustomPainter {
     for (final s in _stars) {
       final alpha = (math.sin(progress * twoPi + s.phase) + 1.0) * 0.35 + 0.15;
       _paint.color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0));
-      canvas.drawCircle(Offset(s.xPercent * w, s.yPercent * h), s.radius, _paint);
+      canvas.drawCircle(
+        Offset(s.xPercent * w, s.yPercent * h),
+        s.radius,
+        _paint,
+      );
     }
   }
 

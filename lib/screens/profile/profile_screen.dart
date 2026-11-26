@@ -45,29 +45,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text(
               'Enter your Gemini API Key to enable real multimodal palmistry and live AI astrologer predictions directly from Google AI.',
-              style: GoogleFonts.outfit(fontSize: 12.5, color: AppTheme.textSecondary, height: 1.4),
+              style: GoogleFonts.outfit(
+                fontSize: 12.5,
+                color: AppTheme.textSecondary,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: ctrl,
               obscureText: true,
-              style: GoogleFonts.outfit(color: AppTheme.textPrimary, fontSize: 13),
+              style: GoogleFonts.outfit(
+                color: AppTheme.textPrimary,
+                fontSize: 13,
+              ),
               decoration: const InputDecoration(
                 hintText: 'AIzaSy...',
-                prefixIcon: Icon(Icons.key_rounded, color: AppTheme.starGold, size: 18),
+                prefixIcon: Icon(
+                  Icons.key_rounded,
+                  color: AppTheme.starGold,
+                  size: 18,
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               await prefs.setString('gemini_api_key', ctrl.text.trim());
               if (ctx.mounted) {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Gemini API Key saved successfully!')),
+                  const SnackBar(
+                    content: Text('Gemini API Key saved successfully!'),
+                  ),
                 );
               }
             },
@@ -87,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: AppTheme.cardBg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(
             'Edit Profile',
             style: GoogleFonts.outfit(
@@ -102,7 +120,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 'Full Name',
-                style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: AppTheme.textMuted,
+                ),
               ),
               const SizedBox(height: 6),
               TextField(
@@ -113,7 +134,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
               Text(
                 'Zodiac Sign',
-                style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: AppTheme.textMuted,
+                ),
               ),
               const SizedBox(height: 6),
               Container(
@@ -134,12 +158,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               z['symbol'] as String,
-                              style: const TextStyle(fontSize: 18, color: AppTheme.starGold),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: AppTheme.starGold,
+                              ),
                             ),
                             const SizedBox(width: 10),
                             Text(
                               z['name'] as String,
-                              style: GoogleFonts.outfit(color: AppTheme.textPrimary),
+                              style: GoogleFonts.outfit(
+                                color: AppTheme.textPrimary,
+                              ),
                             ),
                           ],
                         ),
@@ -158,12 +187,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text('Cancel', style: GoogleFonts.outfit(color: AppTheme.textMuted)),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.outfit(color: AppTheme.textMuted),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
                 await auth.updateProfile(
-                  name: nameCtrl.text.trim().isEmpty ? 'Cosmic Seeker' : nameCtrl.text.trim(),
+                  name: nameCtrl.text.trim().isEmpty
+                      ? 'Cosmic Seeker'
+                      : nameCtrl.text.trim(),
                   zodiac: selectedZodiac,
                 );
                 if (ctx.mounted) Navigator.pop(ctx);
@@ -192,12 +226,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         content: Text(
           'Are you sure you want to sign out of AstroZen?',
-          style: GoogleFonts.outfit(fontSize: 14, color: AppTheme.textSecondary),
+          style: GoogleFonts.outfit(
+            fontSize: 14,
+            color: AppTheme.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: AppTheme.textMuted)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.outfit(color: AppTheme.textMuted),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed),
@@ -220,7 +260,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final userZodiacName = auth.userZodiac ?? 'Scorpio';
     final signData = AppConstants.zodiacSigns.firstWhere(
-      (s) => (s['name'] as String).toLowerCase() == userZodiacName.toLowerCase(),
+      (s) =>
+          (s['name'] as String).toLowerCase() == userZodiacName.toLowerCase(),
       orElse: () => AppConstants.zodiacSigns[7],
     );
     final signColor = Color(signData['color'] as int);
@@ -248,14 +289,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   centerTitle: false,
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.edit_note_rounded, color: AppTheme.starGold),
+                      icon: const Icon(
+                        Icons.edit_note_rounded,
+                        color: AppTheme.starGold,
+                      ),
                       onPressed: () => _showEditProfileDialog(context, auth),
                     ),
                   ],
                 ),
 
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       // ── Profile Header Card ──────────────────────
@@ -271,7 +318,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: signColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: signColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -286,7 +335,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     signColor.withValues(alpha: 0.2),
                                   ],
                                 ),
-                                border: Border.all(color: signColor, width: 1.5),
+                                border: Border.all(
+                                  color: signColor,
+                                  width: 1.5,
+                                ),
                               ),
                               child: Center(
                                 child: Text(
@@ -314,7 +366,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    auth.userPhone != null && auth.userPhone!.isNotEmpty
+                                    auth.userPhone != null &&
+                                            auth.userPhone!.isNotEmpty
                                         ? '+91 ${auth.userPhone}'
                                         : 'Guest User',
                                     style: GoogleFonts.outfit(
@@ -324,11 +377,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 3,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: signColor.withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: signColor.withValues(alpha: 0.3)),
+                                      border: Border.all(
+                                        color: signColor.withValues(alpha: 0.3),
+                                      ),
                                     ),
                                     child: Text(
                                       '${signData['name']} · ${signData['element']}',
@@ -353,7 +411,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           color: AppTheme.cardBg,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppTheme.starGold.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: AppTheme.starGold.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -364,9 +424,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppTheme.starGold.withValues(alpha: 0.15),
+                                    color: AppTheme.starGold.withValues(
+                                      alpha: 0.15,
+                                    ),
                                   ),
-                                  child: const Icon(Icons.account_balance_wallet_rounded, color: AppTheme.starGold, size: 22),
+                                  child: const Icon(
+                                    Icons.account_balance_wallet_rounded,
+                                    color: AppTheme.starGold,
+                                    size: 22,
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 Column(
@@ -374,11 +440,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   children: [
                                     Text(
                                       'Consultation Wallet',
-                                      style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppTheme.textPrimary,
+                                      ),
                                     ),
                                     Text(
                                       '${auth.walletMinutes} Minutes Available',
-                                      style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.starGold, fontWeight: FontWeight.w600),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        color: AppTheme.starGold,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -387,11 +461,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.royalPurple,
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                               onPressed: () => context.go('/subscribe'),
-                              child: Text('Recharge', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w600)),
+                              child: Text(
+                                'Recharge',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -406,14 +491,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           decoration: BoxDecoration(
                             gradient: sub.isSubscribed
                                 ? const LinearGradient(
-                                    colors: [Color(0xFF2A1B4E), Color(0xFF13163A)],
+                                    colors: [
+                                      Color(0xFF2A1B4E),
+                                      Color(0xFF13163A),
+                                    ],
                                   )
                                 : const LinearGradient(
-                                    colors: [Color(0xFF2D1040), Color(0xFF1A1333)],
+                                    colors: [
+                                      Color(0xFF2D1040),
+                                      Color(0xFF1A1333),
+                                    ],
                                   ),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: sub.isSubscribed ? AppTheme.starGold : AppTheme.royalPurple,
+                              color: sub.isSubscribed
+                                  ? AppTheme.starGold
+                                  : AppTheme.royalPurple,
                               width: 1.2,
                             ),
                           ),
@@ -425,13 +518,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   shape: BoxShape.circle,
                                   color: sub.isSubscribed
                                       ? AppTheme.starGold.withValues(alpha: 0.2)
-                                      : AppTheme.royalPurple.withValues(alpha: 0.3),
+                                      : AppTheme.royalPurple.withValues(
+                                          alpha: 0.3,
+                                        ),
                                 ),
                                 child: Icon(
                                   sub.isSubscribed
                                       ? Icons.workspace_premium_rounded
                                       : Icons.auto_awesome_rounded,
-                                  color: sub.isSubscribed ? AppTheme.starGold : AppTheme.roseGold,
+                                  color: sub.isSubscribed
+                                      ? AppTheme.starGold
+                                      : AppTheme.roseGold,
                                   size: 24,
                                 ),
                               ),
@@ -475,7 +572,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 24),
 
                       // ── Section: Preferences ─────────────────────
-                      _SectionHeader(title: 'Preferences', icon: Icons.tune_rounded),
+                      _SectionHeader(
+                        title: 'Preferences',
+                        icon: Icons.tune_rounded,
+                      ),
                       const SizedBox(height: 10),
                       Consumer<NotificationProvider>(
                         builder: (context, notif, _) {
@@ -494,13 +594,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   subtitle: Text(
                                     'Receive Gemini celestial guidance at dawn',
-                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12,
+                                      color: AppTheme.textMuted,
+                                    ),
                                   ),
                                   value: notif.dailyHoroscopeAlert,
                                   activeThumbColor: AppTheme.starGold,
-                                  onChanged: (val) => notif.updateSettings(dailyHoroscope: val),
+                                  onChanged: (val) =>
+                                      notif.updateSettings(dailyHoroscope: val),
                                 ),
-                                const Divider(color: AppTheme.divider, height: 1),
+                                const Divider(
+                                  color: AppTheme.divider,
+                                  height: 1,
+                                ),
                                 SwitchListTile(
                                   title: Text(
                                     'Planetary Transit Insights',
@@ -512,21 +619,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   subtitle: Text(
                                     'Get alerted on major planetary shifts & Rahu Kaal',
-                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12,
+                                      color: AppTheme.textMuted,
+                                    ),
                                   ),
                                   value: notif.rahuKaalAlert,
                                   activeThumbColor: AppTheme.starGold,
-                                  onChanged: (val) => notif.updateSettings(rahuKaal: val),
+                                  onChanged: (val) =>
+                                      notif.updateSettings(rahuKaal: val),
                                 ),
-                                const Divider(color: AppTheme.divider, height: 1),
+                                const Divider(
+                                  color: AppTheme.divider,
+                                  height: 1,
+                                ),
                                 ListTile(
                                   leading: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: AppTheme.starGold.withValues(alpha: 0.15),
+                                      color: AppTheme.starGold.withValues(
+                                        alpha: 0.15,
+                                      ),
                                     ),
-                                    child: const Icon(Icons.bolt_rounded, color: AppTheme.starGold, size: 20),
+                                    child: const Icon(
+                                      Icons.bolt_rounded,
+                                      color: AppTheme.starGold,
+                                      size: 20,
+                                    ),
                                   ),
                                   title: Text(
                                     'Test Gemini Daily Alert',
@@ -538,26 +658,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   subtitle: Text(
                                     'Generates & triggers today\'s horoscope via Gemini API',
-                                    style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12,
+                                      color: AppTheme.textMuted,
+                                    ),
                                   ),
                                   trailing: notif.isLoading
                                       ? const SizedBox(
                                           width: 16,
                                           height: 16,
-                                          child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.starGold),
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppTheme.starGold,
+                                          ),
                                         )
-                                      : const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.starGold),
+                                      : const Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          size: 14,
+                                          color: AppTheme.starGold,
+                                        ),
                                   onTap: notif.isLoading
                                       ? null
                                       : () async {
-                                          final res = await notif.generateTodayHoroscope();
+                                          final res = await notif
+                                              .generateTodayHoroscope();
                                           if (context.mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
                                               SnackBar(
-                                                content: Text(res != null
-                                                    ? '✨ Gemini Daily Horoscope notification generated & stored!'
-                                                    : 'Unable to connect to Gemini engine. Please check backend.'),
-                                                backgroundColor: AppTheme.royalPurple,
+                                                content: Text(
+                                                  res != null
+                                                      ? '✨ Gemini Daily Horoscope notification generated & stored!'
+                                                      : 'Unable to connect to Gemini engine. Please check backend.',
+                                                ),
+                                                backgroundColor:
+                                                    AppTheme.royalPurple,
                                               ),
                                             );
                                           }
@@ -571,7 +707,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 24),
 
                       // ── Section: Astrological Modules ───────────
-                      _SectionHeader(title: 'Astrological Hub', icon: FontAwesomeIcons.moon),
+                      _SectionHeader(
+                        title: 'Astrological Hub',
+                        icon: FontAwesomeIcons.moon,
+                      ),
                       const SizedBox(height: 10),
                       Container(
                         decoration: AppTheme.glassCard,
@@ -587,21 +726,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _ProfileTile(
                               icon: Icons.calendar_today_rounded,
                               title: 'Saved Birth Charts',
-                              subtitle: 'View generated Kundlis & Navamsa profiles',
+                              subtitle:
+                                  'View generated Kundlis & Navamsa profiles',
                               onTap: () => context.go('/kundli'),
                             ),
                             const Divider(color: AppTheme.divider, height: 1),
                             _ProfileTile(
                               icon: Icons.pan_tool_outlined,
                               title: 'Saved Palm Scans',
-                              subtitle: 'Review previous biometric palm analysis',
+                              subtitle:
+                                  'Review previous biometric palm analysis',
                               onTap: () => context.go('/palm-reading'),
                             ),
                             const Divider(color: AppTheme.divider, height: 1),
                             _ProfileTile(
                               icon: Icons.explore_outlined,
                               title: 'Vastu Direction Reports',
-                              subtitle: 'Stored home layout scores and remedies',
+                              subtitle:
+                                  'Stored home layout scores and remedies',
                               onTap: () => context.go('/vastu'),
                             ),
                           ],
@@ -610,7 +752,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 24),
 
                       // ── Section: Support & Info ───────────────────
-                      _SectionHeader(title: 'Support & Trust', icon: Icons.shield_outlined),
+                      _SectionHeader(
+                        title: 'Support & Trust',
+                        icon: Icons.shield_outlined,
+                      ),
                       const SizedBox(height: 10),
                       Container(
                         decoration: AppTheme.glassCard,
@@ -633,7 +778,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _ProfileTile(
                               icon: Icons.info_outline_rounded,
                               title: 'About AstroZen AI',
-                              subtitle: 'Version 1.0.0 (Vedic Ephemeris Engine)',
+                              subtitle:
+                                  'Version 1.0.0 (Vedic Ephemeris Engine)',
                               onTap: () {},
                             ),
                           ],
@@ -645,7 +791,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Center(
                         child: TextButton.icon(
                           onPressed: () => _confirmLogout(context, auth),
-                          icon: const Icon(Icons.logout_rounded, color: AppTheme.errorRed, size: 18),
+                          icon: const Icon(
+                            Icons.logout_rounded,
+                            color: AppTheme.errorRed,
+                            size: 18,
+                          ),
                           label: Text(
                             'Sign Out of AstroZen',
                             style: GoogleFonts.outfit(
@@ -729,7 +879,11 @@ class _ProfileTile extends StatelessWidget {
         subtitle,
         style: GoogleFonts.outfit(fontSize: 12, color: AppTheme.textMuted),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppTheme.textMuted),
+      trailing: const Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 12,
+        color: AppTheme.textMuted,
+      ),
       onTap: onTap,
     );
   }

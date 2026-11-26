@@ -30,7 +30,7 @@ class _HoroscopeDetailScreenState extends State<HoroscopeDetailScreen> {
   void _fetchGeminiHoroscope() async {
     try {
       final res = await AstrozenApiService.getGeminiDailyHoroscope(widget.sign);
-      if (mounted && res != null) {
+      if (mounted) {
         setState(() {
           _geminiToday = res;
         });

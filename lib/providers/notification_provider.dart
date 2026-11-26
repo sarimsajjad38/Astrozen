@@ -12,7 +12,8 @@ class NotificationProvider extends ChangeNotifier {
   bool get dailyHoroscopeAlert => _dailyHoroscopeAlert;
   bool get rahuKaalAlert => _rahuKaalAlert;
 
-  int get unreadCount => _notifications.where((n) => n['isRead'] != true).length;
+  int get unreadCount =>
+      _notifications.where((n) => n['isRead'] != true).length;
 
   Future<void> init() async {
     // Non-blocking background fetch
@@ -46,9 +47,12 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await AstrozenApiService.generateMyDailyHoroscopeNotification();
-      if (res != null && res['notification'] != null) {
-        _notifications.insert(0, Map<String, dynamic>.from(res['notification']));
+      final res =
+          await AstrozenApiService.generateMyDailyHoroscopeNotification();
+      if (res['notification'] != null) {
+        final notifMap = Map<String, dynamic>.from(res['notification']);
+        _notifications.removeWhere((n) => n['id'] == notifMap['id']);
+        _notifications.insert(0, notifMap);
       }
       _isLoading = false;
       notifyListeners();
