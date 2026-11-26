@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/astrozen_api_service.dart';
+import '../services/push_notification_service.dart';
 
 class NotificationProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _notifications = [];
@@ -53,6 +54,20 @@ class NotificationProvider extends ChangeNotifier {
         final notifMap = Map<String, dynamic>.from(res['notification']);
         _notifications.removeWhere((n) => n['id'] == notifMap['id']);
         _notifications.insert(0, notifMap);
+
+        // Instantly trigger real Android system push notification
+        final horoscopeData = res['horoscope'] ?? notifMap['data'];
+        if (horoscopeData != null && horoscopeData is Map) {
+          await PushNotificationService.instance.showHoroscopeAlert(
+            Map<String, dynamic>.from(horoscopeData),
+          );
+        } else {
+          await PushNotificationService.instance.showNotification(
+            title: notifMap['title'] ?? '✨ Daily Cosmic Horoscope',
+            body: notifMap['body'] ??
+                'Your stars have aligned with celestial energies today.',
+          );
+        }
       }
       _isLoading = false;
       notifyListeners();

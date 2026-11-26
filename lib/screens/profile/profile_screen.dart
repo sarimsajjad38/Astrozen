@@ -689,7 +689,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               SnackBar(
                                                 content: Text(
                                                   res != null
-                                                      ? '✨ Gemini Daily Horoscope notification generated & stored!'
+                                                      ? '🔔 Gemini Daily Horoscope push notification delivered to status bar!'
                                                       : 'Unable to connect to Gemini engine. Please check backend.',
                                                 ),
                                                 backgroundColor:

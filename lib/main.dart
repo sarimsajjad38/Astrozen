@@ -7,9 +7,13 @@ import 'providers/horoscope_provider.dart';
 import 'providers/kundli_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/subscription_provider.dart';
+import 'services/push_notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize native Push Notifications in background
+  PushNotificationService.instance.init();
 
   final authProvider = AuthProvider();
   final subscriptionProvider = SubscriptionProvider();

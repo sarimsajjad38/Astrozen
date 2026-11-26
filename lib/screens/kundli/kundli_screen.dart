@@ -84,7 +84,9 @@ class _KundliScreenState extends State<KundliScreen> {
       name: _nameCtrl.text,
       dob: _dobCtrl.text,
       timeOfBirth: _timeCtrl.text.isEmpty ? '12:00 PM' : _timeCtrl.text,
-      placeOfBirth: _placeCtrl.text.isEmpty ? 'New Delhi, India' : _placeCtrl.text,
+      placeOfBirth: _placeCtrl.text.isEmpty
+          ? 'New Delhi, India'
+          : _placeCtrl.text,
     );
     if (mounted) context.push('/kundli/result', extra: data);
   }
@@ -130,7 +132,11 @@ class _KundliScreenState extends State<KundliScreen> {
                         ),
                         const SizedBox(width: 14),
                       ],
-                      const Icon(Icons.menu_book_rounded, color: AppTheme.starGold, size: 22),
+                      const Icon(
+                        Icons.menu_book_rounded,
+                        color: AppTheme.starGold,
+                        size: 22,
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         'Vedic Kundli Generator',
@@ -165,7 +171,9 @@ class _KundliScreenState extends State<KundliScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppTheme.celestialTeal.withValues(alpha: 0.2),
+                            color: AppTheme.celestialTeal.withValues(
+                              alpha: 0.2,
+                            ),
                           ),
                           child: const Icon(
                             Icons.auto_stories_rounded,
@@ -218,7 +226,11 @@ class _KundliScreenState extends State<KundliScreen> {
                     style: GoogleFonts.outfit(color: AppTheme.textPrimary),
                     decoration: const InputDecoration(
                       hintText: 'Enter your name',
-                      prefixIcon: Icon(Icons.person_outline_rounded, color: AppTheme.starGold, size: 20),
+                      prefixIcon: Icon(
+                        Icons.person_outline_rounded,
+                        color: AppTheme.starGold,
+                        size: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -241,8 +253,15 @@ class _KundliScreenState extends State<KundliScreen> {
                         style: GoogleFonts.outfit(color: AppTheme.textPrimary),
                         decoration: const InputDecoration(
                           hintText: 'DD/MM/YYYY',
-                          prefixIcon: Icon(Icons.calendar_today_rounded, color: AppTheme.starGold, size: 20),
-                          suffixIcon: Icon(Icons.arrow_drop_down, color: AppTheme.textMuted),
+                          prefixIcon: Icon(
+                            Icons.calendar_today_rounded,
+                            color: AppTheme.starGold,
+                            size: 20,
+                          ),
+                          suffixIcon: Icon(
+                            Icons.arrow_drop_down,
+                            color: AppTheme.textMuted,
+                          ),
                         ),
                       ),
                     ),
@@ -270,10 +289,16 @@ class _KundliScreenState extends State<KundliScreen> {
                               child: AbsorbPointer(
                                 child: TextField(
                                   controller: _timeCtrl,
-                                  style: GoogleFonts.outfit(color: AppTheme.textPrimary),
+                                  style: GoogleFonts.outfit(
+                                    color: AppTheme.textPrimary,
+                                  ),
                                   decoration: const InputDecoration(
                                     hintText: '12:00 PM',
-                                    prefixIcon: Icon(Icons.access_time_rounded, color: AppTheme.starGold, size: 18),
+                                    prefixIcon: Icon(
+                                      Icons.access_time_rounded,
+                                      color: AppTheme.starGold,
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -297,10 +322,16 @@ class _KundliScreenState extends State<KundliScreen> {
                             const SizedBox(height: 8),
                             TextField(
                               controller: _placeCtrl,
-                              style: GoogleFonts.outfit(color: AppTheme.textPrimary),
+                              style: GoogleFonts.outfit(
+                                color: AppTheme.textPrimary,
+                              ),
                               decoration: const InputDecoration(
                                 hintText: 'City, Country',
-                                prefixIcon: Icon(Icons.location_on_outlined, color: AppTheme.starGold, size: 18),
+                                prefixIcon: Icon(
+                                  Icons.location_on_outlined,
+                                  color: AppTheme.starGold,
+                                  size: 18,
+                                ),
                               ),
                             ),
                           ],
@@ -326,23 +357,35 @@ class _KundliScreenState extends State<KundliScreen> {
                                 const SizedBox(
                                   width: 18,
                                   height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Calculating Vedic Ephemeris...',
-                                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ],
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.auto_awesome_rounded, size: 18),
+                                const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Generate Birth Chart',
-                                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ],
                             ),
@@ -357,9 +400,13 @@ class _KundliScreenState extends State<KundliScreen> {
                       label: const Text('Match Kundlis (36 Guna Milan)'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.starGold,
-                        side: BorderSide(color: AppTheme.starGold.withValues(alpha: 0.4)),
+                        side: BorderSide(
+                          color: AppTheme.starGold.withValues(alpha: 0.4),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),

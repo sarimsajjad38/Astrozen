@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+extension ColorWithValuesExt on Color {
+  Color withValues({double? alpha, double? red, double? green, double? blue}) {
+    if (alpha != null) {
+      return withOpacity(alpha.clamp(0.0, 1.0));
+    }
+    return this;
+  }
+}
+
 class AppTheme {
   // ── Color Palette ──────────────────────────────────────────────
   static const Color deepSpace   = Color(0xFF050714);
